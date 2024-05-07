@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPA Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('calc1.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      max-width: 1000px;
+      width: 90%;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="text"].course-name {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>GPA Calculator</h2>
+    <label for="numSubjects">Number of Subjects:</label>
+    <input type="number" id="numSubjects" min="1" required>
+    <div id="subjectDetails"></div>
+    <button onclick="calculateGPA()">Calculate GPA</button>
+    <div id="result"></div>
+  </div>
+  <script>
+    const gradePointTable = {
+      'O': 10,
+      'A+': 9,
+      'A': 8,
+      'B+': 7,
+      'B': 6,
+      'C': 5,
+      'U': 0
+    };
+
+    function generateInputs() {
+      const numSubjects = parseInt(document.getElementById("numSubjects").value);
+      const subjectDetails = document.getElementById("subjectDetails");
+      subjectDetails.innerHTML = "";
+
+      let tableHtml = `
+    <table>
+      <tr>
+        <th>S.No</th>
+        <th>Course Code</th>
+        <th>Course Name</th>
+        <th>Credits</th>
+        <th>Grade</th>
+      </tr>
+  `;
+
+      for (let i = 1; i <= numSubjects; i++) {
+        tableHtml += `
+      <tr>
+        <td>${i}</td>
+        <td><input type="text" id="courseCode${i}" required></td>
+        <td><input type="text" id="courseName${i}" class="course-name" required></td>
+        <td><input type="number" id="credits${i}" min="0" step="1" required></td>
+        <td>
+          <select id="grade${i}">
+            <option value="O">O (Outstanding)</option>
+            <option value="A+">A+ (Excellent)</option>
+            <option value="A">A (Very Good)</option>
+            <option value="B+">B+ (Good)</option>
+            <option value="B">B (Average)</option>
+            <option value="C">C (Satisfactory)</option>
+            <option value="U">U (Reappearance)</option>
+          </select>
+        </td>
+      </tr>
+      `;
+      }
+
+      tableHtml += `</table>`;
+      subjectDetails.innerHTML = tableHtml;
+    }
+
+    function calculateGPA() {
+      const numSubjects = parseInt(document.getElementById("numSubjects").value);
+      let totalGradePoints = 0;
+      let totalCredits = 0;
+      let hasU = false;
+
+      for (let i = 1; i <= numSubjects; i++) {
+        const grade = document.getElementById(`grade${i}`).value;
+        const credits = parseInt(document.getElementById(`credits${i}`).value);
+
+        if (grade === 'U') {
+          hasU = true;
+          break;
+        }
+
+        totalGradePoints += gradePointTable[grade] * credits;
+        totalCredits += credits;
+      }
+
+      let gpa;
+      if (hasU) {
+        gpa = "--";
+      } else {
+        gpa = totalGradePoints / totalCredits;
+        gpa = gpa.toFixed(2);
+      }
+
+      document.getElementById("result").innerHTML = `Your GPA is: ${gpa}`;
+    }
+
+    document.getElementById("numSubjects").addEventListener("input", generateInputs);
+  </script>
+</body>
+
+</html>
